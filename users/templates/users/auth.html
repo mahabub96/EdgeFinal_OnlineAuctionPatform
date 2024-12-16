@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Authentication</title>
+</head>
+<body>
+    <h1>User Login / Register</h1>
+    
+    <div id="auth-tabs">
+        <button id="login-tab" onclick="showLogin()">Login</button>
+        <button id="register-tab" onclick="showRegister()">Register</button>
+    </div>
+
+    <!-- Login Form -->
+    <div id="login-form" style="display: block;">
+        <h2>Login</h2>
+        <form id="login-form-submit">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required><br><br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required><br><br>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+    <!-- Register Form -->
+    <div id="register-form" style="display: none;">
+        <h2>Register</h2>
+        <form id="register-form-submit">
+            <label for="username">Username:</label>
+            <input type="text" id="register-username" name="username" required><br><br>
+            <label for="password">Password:</label>
+            <input type="password" id="register-password" name="password" required><br><br>
+            <button type="submit">Register</button>
+        </form>
+    </div>
+
+    <script>
+        function showLogin() {
+            document.getElementById("login-form").style.display = "block";
+            document.getElementById("register-form").style.display = "none";
+        }
+
+        function showRegister() {
+            document.getElementById("login-form").style.display = "none";
+            document.getElementById("register-form").style.display = "block";
+        }
+
+        // Handle login form submission
+        document.getElementById('login-form-submit').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            fetch('/api/auth/login/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.access_token) {
+                    localStorage.setItem('access_token', data.access_token);
+                    localStorage.setItem('refresh_token', data.refresh_token);
+                    window.location.href = '/users/profile/';
+                } else {
+                    alert("Login failed");
+                }
+            })
+            .catch(error => console.error("Login error:", error));
+        });
+
+        // Handle registration form submission
+        document.getElementById('register-form-submit').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('register-username').value;
+            const password = document.getElementById('register-password').value;
+            
+            fetch('/api/auth/register/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.access_token) {
+                    localStorage.setItem('access_token', data.access_token);
+                    localStorage.setItem('refresh_token', data.refresh_token);
+                    window.location.href = '/users/profile/';
+                } else {
+                    alert("Registration failed");
+                }
+            })
+            .catch(error => console.error("Registration error:", error));
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+</head>
+<body>
+    <h1>User Profile</h1>
+    <div id="profile-info">
+        <!-- User profile data will be displayed here -->
+    </div>
+
+    <h2>Update Profile</h2>
+    <form id="profile-update-form">
+        <label for="update-username">Username:</label>
+        <input type="text" id="update-username" name="username"><br><br>
+        <button type="submit">Update Profile</button>
+    </form>
+
+    <h2>Change Password</h2>
+    <form id="change-password-form">
+        <label for="new-password">New Password:</label>
+        <input type="password" id="new-password" name="password"><br><br>
+        <button type="submit">Change Password</button>
+    </form>
+
+    <button onclick="logout()">Logout</button>
+
+    <script>
+        const userId = 1; // You can dynamically get the user ID (e.g., from the JWT token)
+        
+        // Fetch user profile data
+        fetch(`/api/users/${userId}/`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('profile-info').innerHTML = `
+                <p>Username: ${data.username}</p>
+            `;
+            document.getElementById('update-username').value = data.username;
+        })
+        .catch(error => console.error("Failed to fetch user profile:", error));
+
+        // Handle profile update form submission
+        document.getElementById('profile-update-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const newUsername = document.getElementById('update-username').value;
+
+            fetch(`/api/users/${userId}/`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                },
+                body: JSON.stringify({ username: newUsername })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert("Profile updated successfully!");
+                window.location.reload(); // Refresh to show updated info
+            })
+            .catch(error => console.error("Failed to update profile:", error));
+        });
+
+        // Handle password change form submission
+        document.getElementById('change-password-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const newPassword = document.getElementById('new-password').value;
+
+            fetch('/api/auth/change-password/', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                },
+                body: JSON.stringify({ new_password: newPassword })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert("Password changed successfully!");
+            })
+            .catch(error => console.error("Failed to change password:", error));
+        });
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            window.location.href = '/login/'; // Redirect to login page
+        }
+    </script>
+</body>
+</html>
