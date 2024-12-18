@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Logs and Notifications</title>
+</head>
+<body>
+    <h1>Admin Logs</h1>
+    <ul>
+        {% for log in logs %}
+            <li>{{ log.user.username }}: {{ log.action }} at {{ log.timestamp }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
