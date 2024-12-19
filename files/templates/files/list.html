@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Files</title>
+</head>
+<body>
+    {% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Files</h2>
+
+    <!-- File Upload Form -->
+    <form id="file-upload-form" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="auction_item">Auction Item:</label>
+            <select id="auction_item" name="auction_item" class="form-control">
+                {% for item in auction_items %}
+                <option value="{{ item.id }}">{{ item.title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="file_path">File:</label>
+            <input type="file" id="file_path" name="file_path" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+
+    <!-- File List -->
+    <h3>Uploaded Files</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Uploaded At</th>
+                <th>File</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="file-list">
+            <!-- Files will be dynamically added here -->
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+</body>
+</html>

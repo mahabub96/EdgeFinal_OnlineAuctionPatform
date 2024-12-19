@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bid History</title>
+</head>
+<body>
+    <h1>Bid History</h1>
+    {% if bids %}
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Auction Item</th>
+                    <th>Bid Amount</th>
+                    <th>Bid Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bid in bids %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'auction_item_detail' bid.auction_item.id %}">
+                                {{ bid.auction_item.title }}
+                            </a>
+                        </td>
+                        <td>{{ bid.bid_amount }}</td>
+                        <td>{{ bid.bid_time }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No bids found.</p>
+    {% endif %}
+</body>
+</html>

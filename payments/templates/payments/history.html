@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment History</title>
+</head>
+<body>
+    <h1>Payment History</h1>
+    <table>
+        <tr>
+            <th>Transaction ID</th>
+            <th>Auction Item</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Date</th>
+        </tr>
+        {% for payment in payments %}
+        <tr>
+            <td>{{ payment.transaction_id }}</td>
+            <td>{{ payment.auction_item.title }}</td>
+            <td>{{ payment.amount }}</td>
+            <td>{{ payment.payment_status }}</td>
+            <td>{{ payment.payment_date }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
