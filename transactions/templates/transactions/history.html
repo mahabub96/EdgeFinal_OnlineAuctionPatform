@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transactions</title>
+</head>
+<body>
+    {% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Transaction History</h2>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Transaction Type</th>
+                <th>Auction Item</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody id="transaction-list">
+            <!-- Transactions will be dynamically added here using JavaScript -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('/api/transactions/user/{{ user.id }}/')
+            .then(response => response.json())
+            .then(data => {
+                const transactionList = document.getElementById('transaction-list');
+                data.forEach(transaction => {
+                    const row = document.createElement('tr');
+
+                    row.innerHTML = `
+                        <td>${new Date(transaction.created_at).toLocaleString()}</td>
+                        <td>${transaction.transaction_type}</td>
+                        <td>${transaction.auction_item}</td>
+                        <td>${transaction.amount}</td>
+                    `;
+
+                    transactionList.appendChild(row);
+                });
+            });
+    });
+</script>
+{% endblock %}
+</body>
+</html>
