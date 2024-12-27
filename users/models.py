@@ -3,11 +3,17 @@ from django.contrib.auth.models import AbstractUser
 
 
 class User(AbstractUser):
+    ROLE_CHOICES = [
+        ('Admin', 'Admin'),
+        ('Moderator', 'Moderator'),
+        ('Seller', 'Seller'),
+        ('Buyer', 'Buyer'),
+    ]
     email = models.EmailField(unique=True)  # User email (unique)
     password = models.CharField(max_length=255)  # Password (hashed by Django auth system)
     is_active = models.BooleanField(default=True)  # Account status
     date_joined = models.DateTimeField(auto_now_add=True)  # Date account created
-    role_name = models.CharField(max_length=100)  # Role of user (e.g., Admin, Seller)
+    role_name = models.CharField(max_length=100, choices=ROLE_CHOICES)  # Role of user (e.g., Admin, Seller)
     permissions = models.JSONField(default=dict)  # Permissions for the user in JSON format
 
     groups = models.ManyToManyField(

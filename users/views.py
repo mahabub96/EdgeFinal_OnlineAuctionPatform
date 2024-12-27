@@ -1,14 +1,17 @@
-#from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 # Create your views here.
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
+from rest_framework. decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import User, UserProfile
 from .serializers import (
     UserSerializer, UserProfileSerializer, RegisterSerializer, ChangePasswordSerializer,
@@ -16,13 +19,27 @@ from .serializers import (
 )
 from rest_framework_simplejwt.tokens import RefreshToken
 
+# def register(request):
+#     if request.method == 'POST':
+#         form = UserCreationForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             messages.success(request, 'Your account has been created! You can now log in.')
+#             return redirect('login')  # Redirect to the login page after registration
+#     else:
+#         form = UserCreationForm()
+#     return render(request, 'users/auth.html', {'form': form})
+
+
 class RegisterView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({"message": "User registered successfully."}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class LoginView(APIView):
@@ -113,3 +130,10 @@ class PasswordResetConfirmView(APIView):
                 return Response({"message": "Password reset successful."}, status=status.HTTP_200_OK)
             return Response({"error": "Invalid token or user ID."}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import CustomClaimTokenObtainSerializer
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomClaimTokenObtainSerializer
